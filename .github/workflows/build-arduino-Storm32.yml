@@ -1,5 +1,4 @@
 name: Build Storm32 Arduino Project
-
 on:
   push:
     branches:

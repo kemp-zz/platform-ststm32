@@ -3,8 +3,7 @@ name: Build Arduino IDE project for Storm32 with external libraries
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+
 
 jobs:
   build:

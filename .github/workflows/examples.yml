@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
+        os: [windows-latest]
         example:
           - "examples/arduino-blink"
           - "examples/arduino-external-libs"
@@ -54,7 +54,9 @@ jobs:
         run: |
           git fetch --tags
           echo "## Changelog" >> $GITHUB_OUTPUT
-          for tag in `git ls-remote --tags | egrep -o 'refs/tags/\d+\.\d+\.\d+(-beta\.\d+)?$' | sed 's-\(refs/tags/v\)||-'`
+          for tag
+
+          in `git ls-remote --tags | egrep -o 'refs/tags/\d+\.\d+\.\d+(-beta\.\d+)?$' | sed 's-\(refs/tags/v\)||-'`
           do
             echo "- `git show -s --format=format:"%cD %an %s" ${tag}`" >> $GITHUB_OUTPUT
           done

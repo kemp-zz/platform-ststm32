@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-      env:
+    env:
         PIO_SECRETS: ${{ secrets.PIO_SECRETS }}
     steps:
       - uses: actions/checkout@v3

@@ -1,8 +1,12 @@
 name: Build Storm32 Arduino Project
+
+
 on:
   push:
     branches:
       - main
+
+      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,12 +14,15 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: "recursive"
+          
       - name: Install PlatformIO
         run: |
           pip install -U platformio
       - name: Build Storm32 Project
+      
         run: |
           pio run -d storm32_v1_31_rc -b storm32_v1_31_rc.json --board storm32_v1_31_rc --ide arduino
+          
       - name: Create Release
         uses: actions/create-release@v1
         env:
@@ -26,6 +33,7 @@ jobs:
           body: ${{ steps.create_changelog.outputs.body }}
           draft: false
           prerelease: false
+          
       - name: Create Changelog
         run: |
           git fetch --tags

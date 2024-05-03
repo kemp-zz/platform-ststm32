@@ -1,4 +1,4 @@
-name: Build Arduino IDE project for Storm32
+name: Build Arduino IDE project for Storm32 with external libraries
 
 on:
   push:
@@ -22,6 +22,9 @@ jobs:
 
       - name: Copy Arduino IDE project files
         run: cp ../storm32.ino ./src/
+
+      - name: Install external libraries
+        run: pio lib install https://github.com/stm32duino/Arduino_Core_STM32
 
       - name: Install platformio dependencies
         run: pio ci --dependencies

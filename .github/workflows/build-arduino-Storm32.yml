@@ -1,4 +1,4 @@
-name: Build Arduino IDE project for Storm32
+name: Generate Storm32 INO File
 
 on:
   push:
@@ -7,33 +7,43 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  generate_ino:
     runs-on: ubuntu-latest
-    
-    env:
-        PIO_SECRETS: ${{ secrets.PIO_SECRETS }}
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create Project Folder structure
+      - name: Get Board JSON
         run: |
-          mkdir -p src
-          mkdir -p lib
+          curl https://raw.githubusercontent.com/kemp-zz/platform-ststm32/main/boards/storm32_v1_31_rc.json > board.json
 
-      - name: Copy Arduino IDE project files
-        run: cp ../storm32.ino ./src/
-
-      - name: Install platformio dependencies
-        run: pio ci --dependencies
-
-      - name: Build Project
+      - name: Get PlatformIO INI
         run: |
-          cd src
-          pio run -e storm32
+          curl https://raw.githubusercontent.com/kemp-zz/platform-ststm32/main/tests/storm32/platformio.ini > platformio.ini
 
-      - name: Upload output binary
+      - name: Generate Storm32 INO
+        run: |
+          echo "// This file is generated automatically" >> storm32.ino
+          echo "#include <Arduino.h>" >> storm32.ino
+          echo "" >> storm32.ino
+
+          # Add board-specific defines
+          jq '.defines[] | .key + "=" + .value' board.json >> storm32.ino
+
+          # Add platformio.ini settings
+          cat platformio.ini >> storm32.ino
+
+          # Add setup and loop functions
+          echo "void setup() {" >> storm32.ino
+          echo "  Serial.begin(9600);" >> storm32.ino
+          echo "}" >> storm32.ino
+          echo "" >> storm32.ino
+          echo "void loop() {" >> storm32.ino
+          echo "  Serial.println(\"Hello, Storm32!\");" >> storm32.ino
+          echo "  delay(1000);" >> storm32.ino
+          echo "}" >> storm32.ino
+
+      - name: Upload INO File
         uses: actions/upload-artifact@v3
         with:
-          name: binary
-          path: build/storm32.elf
-          retention-days: 1
+          name: storm32_ino
+          path: storm32.ino

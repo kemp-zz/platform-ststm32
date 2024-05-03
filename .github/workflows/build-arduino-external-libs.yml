@@ -25,7 +25,7 @@ jobs:
           pio pkg install --global --platform symlink://.
       - name: Build library
         run: |
-          pio run -d arduino-external-libs --board arduino_nano
+          pio run -d arduino-external-libs --board storm32_v1_31_rc.json
           
       - name: Create Release
         uses: actions/create-release@v1

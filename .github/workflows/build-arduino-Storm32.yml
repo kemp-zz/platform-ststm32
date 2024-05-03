@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: platformio/builder:arm-none-eabi-gcc@sha256:669ef078d50b4382e5233c390e2c17148025793404fd99f92cc496bc31235bca
+    container: platformio/platformio:latest
     env:
       PIO_SECRETS: ${{ secrets.PIO_SECRETS }}
     steps:

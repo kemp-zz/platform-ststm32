@@ -1,5 +1,5 @@
-name: Build Arduino IDE project for Storm32
-
+name: Build storm32.ino for Storm32
+    
 on:
   push:
     branches: [ main ]
@@ -15,26 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create Project Folder structure
-        run: |
-          mkdir -p src
-          mkdir -p lib
-
-      - name: Copy Arduino IDE project files
-        run: cp ../storm32.ino ./src/
-
       - name: Install platformio dependencies
         run: pio ci --dependencies
 
       - name: Build Project
         run: pio run -e storm32
 
-      - name: Move output binary
-        run: mv build/storm32.elf tests/storm32/
-
       - name: Upload output binary
         uses: actions/upload-artifact@v3
         with:
           name: binary
-          path: tests/storm32/storm32.elf
+          path: build/storm32.elf
           retention-days: 1

@@ -27,7 +27,7 @@ jobs:
           echo "" >> storm32.ino
 
           # Add board-specific defines
-          jq '.defines[] | .key + "=" + .value' board.json >> storm32.ino
+          jq '.defines // [] | .[] | .key + "=" + .value' board.json >> storm32.ino || true
 
           # Add platformio.ini settings
           cat platformio.ini >> storm32.ino

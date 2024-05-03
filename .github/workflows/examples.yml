@@ -62,3 +62,26 @@ jobs:
       - name: Build examples
         run: |
           pio run -d ${{ matrix.example }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_NAME: ${{ github.run_id }}
+        with:
+          tag_name: ${{ github.run_id }}
+          body: ${{ steps.create_changelog.outputs.body }}
+          draft: false
+          prerelease: false
+      - name: Create Changelog
+        run: |
+          git fetch --tags
+          echo "## Changelog" >> $GITHUB_OUTPUT
+          for tag in `git ls-remote --tags | egrep -o 'refs/tags/\d+\.\d+\.\d+(-beta\.\d+)?$' | sed 's-\(refs/tags/v\)||-'`
+          do
+            echo "- `git show -s --format=format:"%cD %an %s" ${tag}`" >> $GITHUB_OUTPUT
+          done

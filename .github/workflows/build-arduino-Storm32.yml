@@ -29,9 +29,12 @@ jobs:
       - name: Build Project
         run: pio run -e storm32
 
+      - name: Move output binary
+        run: mv build/storm32.elf tests/storm32/
+
       - name: Upload output binary
         uses: actions/upload-artifact@v3
         with:
           name: binary
-          path: build/storm32.elf
+          path: tests/storm32/storm32.elf
           retention-days: 1

@@ -1,0 +1,41 @@
+name: Build Arduino External Library
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          pip install -U https://github.com/platformio/platformio/archive/develop.zip
+          pio pkg install --global --platform symlink://.
+      - name: Build library
+        run: |
+          pio run -d arduino-external-libs --board storm32_v1_31_rc
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{
+                    GITHUB_TOKEN }}
+          RELEASE_NAME: ${{ github.run_id }}
+        with:
+          tag_name: ${{ github.run_id }}
+          body: ${{ steps.create_changelog.outputs.body }}
+          draft: false
+          prerelease: false
+      - name: Create Changelog
+        run: |
+          git fetch --tags
+          echo "## Changelog" >> $GITHUB_OUTPUT
+          for tag in `git ls-remote --tags | egrep -o 'refs/tags/\d+\.\d+\.\d+(-beta\.\d+)?$' | sed 's-\(refs/tags/v\)||-'`
+          do
+            echo "- `git show -s --format=format:"%cD %an %s" ${tag}`" >> $GITHUB_OUTPUT
+          done

@@ -3,14 +3,15 @@ name: Build Arduino IDE project for Storm32
 on:
   push:
     branches: [ main ]
-
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: platformio/platformio:latest
-    env:
-      PIO_SECRETS: ${{ secrets.PIO_SECRETS }}
+    
+      env:
+        PIO_SECRETS: ${{ secrets.PIO_SECRETS }}
     steps:
       - uses: actions/checkout@v3
 
@@ -18,9 +19,18 @@ jobs:
         run: |
           mkdir -p src
           mkdir -p lib
+      
 
-      - name: Copy Arduino IDE project files
-        run: cp ../storm32.ino ./src/
+      - name: Generate storm32.ino file
+        run: |
+          echo "#include <Arduino.h>" >> src/storm32.ino
+          echo "void setup() {" >> src/storm32.ino
+          echo "  Serial.begin(9600);" >> src/storm32.ino
+          echo "}" >> src/storm32.ino
+          echo "void loop() {" >> src/storm32.ino
+          echo "  Serial.println(\"Hello, Storm32!\");" >> src/storm32.ino
+          echo "  delay(1000);" >> src/storm32.ino
+          echo "}" >> src/storm32.ino
 
       - name: Install platformio dependencies
         run: pio ci --dependencies
